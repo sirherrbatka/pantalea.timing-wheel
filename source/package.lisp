@@ -8,7 +8,7 @@
                 #:log-info
                 #:log-warn)
   (:export
-   #:join-thread!
    #:stop-thread
+   #:stop!
    #:run
    #:add!))

@@ -114,4 +114,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     callback))
 
 (defun join-thread! (timing-wheel)
-  (bt2:join-thread (thread timing-wheel)))
+  (ignore-errors (bt2:join-thread (thread timing-wheel))))
+
+(defun stop! (timing-wheel)
+  (add! timing-wheel 0 (lambda () (signal 'stop-thread)))
+  (join-thread! timing-wheel)
+  timing-wheel)
