@@ -58,6 +58,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (defun task-run! (task &aux (callback (task-callback task)))
   (handler-case (funcall callback)
+    (stop-thread (c)
+      (signal c))
     (condition (e)
       (log-warn "Condition signalled while running task in TIMING-WHEEL: ~a" e))))
 
