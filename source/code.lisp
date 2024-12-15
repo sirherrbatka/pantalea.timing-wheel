@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 (define-condition stop-thread ()
   ())
 
-(defun make-timing-wheel (size tick-duration)
+(defun make (size tick-duration)
   (assert (> size 0))
   (assert (> tick-duration 0))
   (make-instance 'timing-wheel
@@ -57,7 +57,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   (remaining-rounds 0 :type fixnum))
 
 (defun task-run! (task &aux (callback (task-callback task)))
-  (funcall callback))
+  (handler-case (funcall callback)
+    (condition (e)
+      (log-warn "Condition signalled while running task in TIMING-WHEEL: ~a" e))))
 
 (defun tick! (timing-wheel)
   (declare (optimize (speed 3) (safety 0)))
@@ -80,18 +82,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             (mod (1+ wheel-pointer) (length buckets))))))
 
 (defun run (size tick-duration)
-  (let ((timing-wheel (make-timing-wheel size tick-duration))
+  (let ((timing-wheel (make size tick-duration))
         (sleep-duration (/ tick-duration 1000.0)))
     (setf (thread timing-wheel)
           (bt2:make-thread (lambda ()
-                             (l:log-info "TMING-WHEEL thread starting.")
+                             (log-info "TMING-WHEEL thread starting.")
                              (handler-case
                                  (iterate
                                    (tick! timing-wheel)
                                    (sleep sleep-duration))
                                (stop-thread (e)
                                  (declare (ignore e))
-                                 (log4cl:log-info "TMING-WHEEL thread stopping."))))
+                                 (log-info "TMING-WHEEL thread stopping."))))
                            :name "Timer wheel thread"))
     timing-wheel))
 
