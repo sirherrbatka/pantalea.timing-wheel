@@ -7,7 +7,6 @@
                 #:log-warn)
   (:export
    #:join-thread!
-   #:make
    #:stop-thread
    #:run
    #:add!))
