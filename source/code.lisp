@@ -26,7 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 (defclass timing-wheel ()
   ((%tick-duration
     :initarg :tick-duration
-    :documentation "Tick duration in ms"
+    :documentation "Tick duration in seconds"
     :accessor tick-duration)
    (%buckets
     :initarg :buckets
@@ -82,15 +82,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             (mod (1+ wheel-pointer) (length buckets))))))
 
 (defun run (size tick-duration)
-  (let ((timing-wheel (make size tick-duration))
-        (sleep-duration (/ tick-duration 1000.0)))
+  (let ((timing-wheel (make size tick-duration)))
     (setf (thread timing-wheel)
           (bt2:make-thread (lambda ()
                              (log-info "TMING-WHEEL thread starting.")
                              (handler-case
                                  (iterate
                                    (tick! timing-wheel)
-                                   (sleep sleep-duration))
+                                   (sleep tick-duration))
                                (stop-thread (e)
                                  (declare (ignore e))
                                  (log-info "TMING-WHEEL thread stopping."))))
