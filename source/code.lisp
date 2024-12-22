@@ -84,7 +84,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             (mod (1+ wheel-pointer) (length buckets))))))
 
 (defun run (size tick-duration)
-  (let ((timing-wheel (make size tick-duration)))
+  (let ((timing-wheel (make size (round (* 1000 tick-duration)))))
     (setf (thread timing-wheel)
           (bt2:make-thread (lambda ()
                              (log-info "TMING-WHEEL thread starting.")
@@ -100,7 +100,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (defun add! (timing-wheel delay callback)
   (bind ((tick-duration (tick-duration timing-wheel))
-         (ticks (round (+ delay tick-duration) tick-duration))
+         (ticks (round (+ (* 1000 delay) tick-duration) tick-duration))
          (buckets (buckets timing-wheel))
          (size (length buckets))
          (pointer (mod (+ (bt2:with-lock-held ((lock timing-wheel))
