@@ -8,7 +8,6 @@
                 #:log-info
                 #:log-warn)
   (:export
-   #:stop-thread
    #:stop!
    #:run
    #:add!))
