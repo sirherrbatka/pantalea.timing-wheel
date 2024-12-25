@@ -61,7 +61,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     (stop-thread (c)
       (signal c))
     (condition (e)
-      (log-warn "Condition signalled while running task in TIMING-WHEEL: ~a" e))))
+      (log:warn "Condition signalled while running task in TIMING-WHEEL: ~a" e))))
 
 (defun tick! (timing-wheel)
   (declare (optimize (speed 3) (safety 0)))
@@ -87,14 +87,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   (let ((timing-wheel (make size (round (* 1000 tick-duration)))))
     (setf (thread timing-wheel)
           (bt2:make-thread (lambda ()
-                             (log-info "TMING-WHEEL thread starting.")
+                             (log:info "TMING-WHEEL thread starting.")
                              (handler-case
                                  (iterate
                                    (tick! timing-wheel)
                                    (sleep tick-duration))
                                (stop-thread (e)
                                  (declare (ignore e))
-                                 (log-info "TMING-WHEEL thread stopping."))))
+                                 (log:info "TMING-WHEEL thread stopping."))))
                            :name "Timer wheel thread"))
     timing-wheel))
 
